@@ -1,0 +1,27 @@
+{
+    "name": "gorontalokota/sso-codeigniter4",
+    "description": "Integrasi SSO Pemerintah Kota Gorontalo untuk CodeIgniter 4: route login siap pakai, filter halaman dan API, back-channel logout.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["codeigniter", "codeigniter4", "sso", "oidc", "gorontalo"],
+    "require": {
+        "php": "^8.1",
+        "gorontalokota/sso-php": "^0.1"
+    },
+    "require-dev": {
+        "codeigniter4/framework": "^4.4",
+        "phpstan/phpstan": "^2.0"
+    },
+    "autoload": {
+        "psr-4": { "Gorontalokota\\Sso\\CodeIgniter\\": "src/" }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../php-core",
+            "options": { "symlink": true, "versions": { "gorontalokota/sso-php": "0.1.0" } }
+        }
+    ],
+    "config": { "sort-packages": true },
+    "minimum-stability": "stable"
+}

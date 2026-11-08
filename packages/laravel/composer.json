@@ -1,0 +1,42 @@
+{
+    "name": "gorontalokota/sso-laravel",
+    "description": "Integrasi SSO Pemerintah Kota Gorontalo untuk Laravel: login OIDC siap pakai, back-channel logout, dan guard API bearer token.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["laravel", "sso", "oidc", "openid-connect", "guard", "gorontalo"],
+    "require": {
+        "php": "^8.1",
+        "gorontalokota/sso-php": "^0.1",
+        "illuminate/auth": "^10.0 || ^11.0 || ^12.0 || ^13.0",
+        "illuminate/cache": "^10.0 || ^11.0 || ^12.0 || ^13.0",
+        "illuminate/http": "^10.0 || ^11.0 || ^12.0 || ^13.0",
+        "illuminate/routing": "^10.0 || ^11.0 || ^12.0 || ^13.0",
+        "illuminate/support": "^10.0 || ^11.0 || ^12.0 || ^13.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0 || ^9.0 || ^10.0 || ^11.0",
+        "phpunit/phpunit": "^10.5 || ^11.0"
+    },
+    "autoload": {
+        "psr-4": { "Gorontalokota\\Sso\\Laravel\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Gorontalokota\\Sso\\Laravel\\Tests\\": "tests/" }
+    },
+    "extra": {
+        "laravel": {
+            "providers": ["Gorontalokota\\Sso\\Laravel\\SsoServiceProvider"],
+            "aliases": { "Sso": "Gorontalokota\\Sso\\Laravel\\Facades\\Sso" }
+        }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../php-core",
+            "options": { "symlink": true, "versions": { "gorontalokota/sso-php": "0.1.0" } }
+        }
+    ],
+    "scripts": { "test": "phpunit" },
+    "config": { "sort-packages": true },
+    "minimum-stability": "stable"
+}

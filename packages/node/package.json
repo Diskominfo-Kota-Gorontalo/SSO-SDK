@@ -1,0 +1,96 @@
+{
+  "name": "@gorontalokota/sso",
+  "version": "0.1.0",
+  "description": "SDK klien SSO Pemerintah Kota Gorontalo (OpenID Connect) untuk Node.js, Express, Next.js (Auth.js) dan Vue.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ORG/sso-sdk.git",
+    "directory": "packages/node"
+  },
+  "keywords": [
+    "sso",
+    "oidc",
+    "openid-connect",
+    "gorontalo",
+    "express",
+    "nextjs",
+    "auth.js",
+    "vue"
+  ],
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./express": {
+      "types": "./dist/express.d.ts",
+      "import": "./dist/express.js"
+    },
+    "./next": {
+      "types": "./dist/next.d.ts",
+      "import": "./dist/next.js"
+    },
+    "./vue": {
+      "types": "./dist/vue.d.ts",
+      "import": "./dist/vue.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "jose": "^6.2.15",
+    "openid-client": "^6.8.9"
+  },
+  "peerDependencies": {
+    "express": "^4.18.0 || ^5.0.0",
+    "express-session": "^1.17.0",
+    "next-auth": ">=5.0.0-beta.0",
+    "vue": "^3.3.0"
+  },
+  "peerDependenciesMeta": {
+    "express": {
+      "optional": true
+    },
+    "express-session": {
+      "optional": true
+    },
+    "next-auth": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@auth/core": "^0.41.3",
+    "@types/express": "^5.0.6",
+    "@types/express-session": "^1.19.0",
+    "@types/node": "^26.6.6",
+    "@types/supertest": "^7.2.1",
+    "express": "^5.3.0",
+    "express-session": "^1.19.0",
+    "supertest": "^7.3.2",
+    "tsup": "^9.0.0",
+    "typescript": "~5.9",
+    "vitest": "^5.1.0",
+    "vue": "^3.5.45"
+  }
+}

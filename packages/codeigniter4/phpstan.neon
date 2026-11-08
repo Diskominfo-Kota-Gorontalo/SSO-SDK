@@ -1,0 +1,11 @@
+parameters:
+    level: 6
+    paths:
+        - src
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+    scanFiles:
+        - vendor/codeigniter4/framework/system/Common.php
+        - vendor/codeigniter4/framework/system/Helpers/url_helper.php
+    scanDirectories:
+        - vendor/codeigniter4/framework/system

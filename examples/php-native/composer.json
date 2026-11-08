@@ -1,0 +1,13 @@
+{
+    "name": "gorontalokota/sso-example-php-native",
+    "description": "Contoh integrasi SSO Kota Gorontalo untuk PHP native.",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": "^8.1",
+        "gorontalokota/sso-php": "^0.1"
+    },
+    "repositories": [
+        { "type": "path", "url": "../../packages/php-core", "options": { "versions": { "gorontalokota/sso-php": "0.1.0" } } }
+    ]
+}

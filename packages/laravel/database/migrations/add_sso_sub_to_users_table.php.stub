@@ -1,0 +1,26 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+/**
+ * Kolom penaut akun lokal ke akun SSO (klaim "sub"). Password lokal tidak lagi dibutuhkan untuk login SSO.
+ */
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('users', function (Blueprint $table): void {
+            $table->string('sso_sub', 64)->nullable()->unique()->after('id');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('users', function (Blueprint $table): void {
+            $table->dropUnique(['sso_sub']);
+            $table->dropColumn('sso_sub');
+        });
+    }
+};
