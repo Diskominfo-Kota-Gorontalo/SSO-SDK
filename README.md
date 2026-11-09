@@ -4,7 +4,7 @@ Library resmi untuk menghubungkan aplikasi OPD ke **SSO Pemerintah Kota Gorontal
 
 | Aplikasi Anda | Paket | Panduan |
 |---|---|---|
-| Laravel 10–13 | `composer require gorontalokota/sso-laravel` | [packages/laravel](packages/laravel/README.md) |
+| Laravel 12–13 (PHP 8.2+) | `composer require gorontalokota/sso-laravel` | [packages/laravel](packages/laravel/README.md) |
 | CodeIgniter 4 | `composer require gorontalokota/sso-codeigniter4` | [packages/codeigniter4](packages/codeigniter4/README.md) |
 | CodeIgniter 3 | `composer require gorontalokota/sso-php` + salin 3 file | [packages/codeigniter3](packages/codeigniter3/README.md) |
 | PHP native | `composer require gorontalokota/sso-php` | [packages/php-core](packages/php-core/README.md), [contoh](examples/php-native) |
@@ -66,7 +66,33 @@ packages/node          @gorontalokota/sso              (npm)
 examples/php-native    contoh aplikasi PHP native
 ```
 
-- **Packagist** membaca `composer.json` di root repositori, jadi setiap paket PHP perlu repositori baca-saja sendiri yang dipecah dari monorepo ini (mis. dengan `splitsh/lite` atau GitHub Action `symplify/monorepo-split`). Beri tag versi yang sama (`v0.1.0`) di setiap repositori.
-- Blok `repositories` (path) di `composer.json` setiap paket hanya untuk pengembangan lokal dan diabaikan oleh aplikasi yang memasang paket.
-- **npm**: `cd packages/node && npm publish` (sudah `access: public`).
-- Menjalankan tes: `composer install && vendor/bin/phpunit` di setiap paket PHP, `npm install && npm test` di `packages/node`.
+Semua perubahan dikerjakan di monorepo ini. Repositori paket PHP (`sso-php`, `sso-laravel`, `sso-codeigniter4`) hanya cermin baca-saja yang diisi otomatis oleh GitHub Actions, karena Packagist membaca `composer.json` di root repositori.
+
+- **CI** (`.github/workflows/ci.yml`): setiap push dan pull request menjalankan tes dan analisis statis paket PHP (versi PHP terendah yang didukung dan PHP 8.4) serta tes paket Node (Node 20 dan 22).
+- **Rilis** (`.github/workflows/release.yml`): mendorong tag `vX.Y.Z` akan memeriksa versi, menjalankan CI, memecah setiap paket PHP ke repositorinya (branch `main` + tag yang sama), menerbitkan paket npm dengan provenance, lalu membuat GitHub Release.
+
+### Persiapan sekali saja
+
+1. Buat repositori publik kosong di organisasi: `sso-php`, `sso-laravel`, `sso-codeigniter4`.
+2. Buat *fine-grained personal access token* (pemilik: organisasi) dengan akses ke ketiga repositori itu, izin **Contents: Read and write**. Simpan sebagai secret `SPLIT_TOKEN` di repositori monorepo.
+3. Di npmjs.com, buat organisasi `gorontalokota` dan *granular access token* dengan izin publish untuk scope `@gorontalokota`. Simpan sebagai secret `NPM_TOKEN`.
+4. Setelah rilis pertama, daftarkan tiga repositori paket di packagist.org/packages/submit (urut: `sso-php` dulu), dengan akun pemilik vendor `gorontalokota`. Hubungkan Packagist ke organisasi GitHub agar update berjalan otomatis.
+
+### Membuat rilis
+
+```bash
+# 1. Naikkan versi npm dan, bila versi minor/mayor berubah, versi sso-php yang diminta paket Laravel dan CI4
+cd packages/node && npm version 0.2.0 --no-git-tag-version && cd ../..
+#    packages/laravel/composer.json dan packages/codeigniter4/composer.json: "gorontalokota/sso-php": "^0.2"
+.github/scripts/check-versions.sh v0.2.0        # harus "Versi cocok"
+
+# 2. Commit, push, lalu tag
+git commit -am "Rilis v0.2.0" && git push origin main
+git tag v0.2.0 && git push origin v0.2.0
+```
+
+Bila pemeriksaan versi gagal, tidak ada yang diterbitkan; perbaiki versinya, hapus tag (`git push origin :refs/tags/v0.2.0`), lalu tag ulang.
+
+### Pengembangan lokal
+
+Blok `repositories` (path) di `composer.json` setiap paket hanya untuk pengembangan lokal dan diabaikan oleh aplikasi yang memasang paket. Menjalankan tes: `composer install && vendor/bin/phpunit` di setiap paket PHP, `npm install && npm test` di `packages/node`.

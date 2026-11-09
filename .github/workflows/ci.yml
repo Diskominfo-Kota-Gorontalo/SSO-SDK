@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  php:
+    name: PHP ${{ matrix.php }} · ${{ matrix.package }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Batas bawah = versi terendah yang masih bisa dipasang tanpa advisori keamanan:
+        # Laravel 12 (PHP 8.2) untuk sso-laravel, CodeIgniter 4.7.4+ (PHP 8.2) untuk pengujian sso-codeigniter4.
+        include:
+          - { package: php-core, php: '8.1' }
+          - { package: php-core, php: '8.4' }
+          - { package: laravel, php: '8.2' }
+          - { package: laravel, php: '8.4' }
+          - { package: codeigniter4, php: '8.2' }
+          - { package: codeigniter4, php: '8.4' }
+    defaults:
+      run:
+        working-directory: packages/${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: openssl, json, mbstring, intl
+          coverage: none
+
+      # Tanpa composer.lock: setiap versi PHP memasang dependensi tertinggi yang cocok (mis. Laravel 10 di PHP 8.1).
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Tests
+        if: hashFiles(format('packages/{0}/phpunit.xml.dist', matrix.package)) != ''
+        run: vendor/bin/phpunit
+
+      - name: Static analysis
+        if: hashFiles(format('packages/{0}/phpstan.neon', matrix.package)) != ''
+        run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+
+  node:
+    name: Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['20', '22']
+    defaults:
+      run:
+        working-directory: packages/node
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: packages/node/package-lock.json
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build

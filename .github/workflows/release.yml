@@ -1,0 +1,93 @@
+name: Release
+
+# Rilis dengan mendorong tag di monorepo:  git tag v0.2.0 && git push origin v0.2.0
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Periksa versi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: .github/scripts/check-versions.sh "${GITHUB_REF_NAME}"
+
+  ci:
+    needs: check
+    uses: ./.github/workflows/ci.yml
+
+  split:
+    name: Pecah ke repositori paket PHP
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # SPLIT_TOKEN: fine-grained token organisasi dengan izin Contents: Read and write ke tiga repositori paket.
+      - name: Split dan push
+        env:
+          SPLIT_TOKEN: ${{ secrets.SPLIT_TOKEN }}
+          ORG: Diskominfo-Kota-Gorontalo
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          for pair in php-core:sso-php laravel:sso-laravel codeigniter4:sso-codeigniter4; do
+            dir="${pair%%:*}"; repo="${pair##*:}"
+            url="https://x-access-token:${SPLIT_TOKEN}@github.com/${ORG}/${repo}.git"
+            sha="$(git subtree split --prefix="packages/${dir}")"
+            echo "packages/${dir} -> ${repo} @ ${sha}"
+            git push "${url}" "${sha}:refs/heads/main"
+            git push "${url}" "${sha}:refs/tags/${GITHUB_REF_NAME}"
+          done
+
+  npm:
+    name: Publish npm
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # provenance npm (bukti paket dibangun dari repositori ini)
+    defaults:
+      run:
+        working-directory: packages/node
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+          cache: npm
+          cache-dependency-path: packages/node/package-lock.json
+
+      - run: npm ci
+
+      # prepublishOnly menjalankan typecheck, tes, dan build sebelum terbit.
+      - name: Publish
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  github-release:
+    name: GitHub Release
+    needs: [split, npm]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - run: gh release create "${GITHUB_REF_NAME}" --generate-notes --verify-tag
+        env:
+          GH_TOKEN: ${{ github.token }}

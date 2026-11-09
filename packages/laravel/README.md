@@ -1,6 +1,6 @@
 # gorontalokota/sso-laravel
 
-Login SSO Pemerintah Kota Gorontalo untuk Laravel 10–13: route siap pakai, penautan akun lokal, back-channel logout otomatis, dan guard API bearer token.
+Login SSO Pemerintah Kota Gorontalo untuk Laravel 12–13 (PHP 8.2+): route siap pakai, penautan akun lokal, back-channel logout otomatis, dan guard API bearer token.
 
 ## Instalasi
 
