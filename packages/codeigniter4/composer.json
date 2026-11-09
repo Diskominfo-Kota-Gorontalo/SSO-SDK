@@ -35,7 +35,7 @@
             "options": {
                 "symlink": true,
                 "versions": {
-                    "gorontalokota/sso-php": "0.1.0"
+                    "gorontalokota/sso-php": "0.1.1"
                 }
             }
         }

@@ -1,6 +1,6 @@
 {
   "name": "@gorontalokota/sso",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SDK klien SSO Pemerintah Kota Gorontalo (OpenID Connect) untuk Node.js, Express, Next.js (Auth.js) dan Vue.",
   "license": "MIT",
   "type": "module",
