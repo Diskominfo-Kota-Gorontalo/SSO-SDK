@@ -32,6 +32,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # Tanpa ini, checkout menyimpan GITHUB_TOKEN di konfigurasi git dan token itulah yang dipakai untuk push
+          # (ditolak karena hanya berlaku untuk repositori ini), bukan SPLIT_TOKEN.
+          persist-credentials: false
 
       # SPLIT_TOKEN: fine-grained token organisasi dengan izin Contents: Read and write ke tiga repositori paket.
       - name: Split dan push
@@ -40,6 +43,10 @@ jobs:
           ORG: Diskominfo-Kota-Gorontalo
         run: |
           set -euo pipefail
+          if [[ -z "${SPLIT_TOKEN}" ]]; then
+            echo "::error::Secret SPLIT_TOKEN belum diisi (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
