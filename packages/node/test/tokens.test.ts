@@ -20,9 +20,9 @@ afterAll(() => provider.close());
 
 describe('verifyAccessToken', () => {
   it('accepts a valid access token and parses scopes', async () => {
-    const claims = await client.verifyAccessToken(await provider.accessToken({ scope: 'openid asn' }), { requiredScopes: ['asn'] });
+    const claims = await client.verifyAccessToken(await provider.accessToken({ scope: 'openid employee' }), { requiredScopes: ['employee'] });
 
-    expect(claims).toMatchObject({ sub: provider.subject, client_id: provider.clientId, realm: 'internal', scopes: ['openid', 'asn'] });
+    expect(claims).toMatchObject({ sub: provider.subject, client_id: provider.clientId, realm: 'internal', scopes: ['openid', 'employee'] });
   });
 
   it('accepts any configured audience', async () => {
@@ -39,10 +39,10 @@ describe('verifyAccessToken', () => {
   });
 
   it('throws InsufficientScopeError when a required scope is missing', async () => {
-    const error = await client.verifyAccessToken(await provider.accessToken({ scope: 'openid profile' }), { requiredScopes: ['asn'] }).catch((e) => e);
+    const error = await client.verifyAccessToken(await provider.accessToken({ scope: 'openid profile' }), { requiredScopes: ['employee'] }).catch((e) => e);
 
     expect(error).toBeInstanceOf(InsufficientScopeError);
-    expect(error.requiredScopes).toEqual(['asn']);
+    expect(error.requiredScopes).toEqual(['employee']);
   });
 });
 

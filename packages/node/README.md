@@ -43,9 +43,9 @@ Scope yang tersedia:
 | `openid`     | keduanya | `sub`, `sid`, `auth_time`                                                                   |
 | `profile`    | keduanya | `name`, `preferred_username` (realm internal: NIP)                                          |
 | `email`      | keduanya | `email`, `email_verified`                                                                   |
-| `asn`        | internal | `nip`, `opd_kode`, `opd_nama`, `jabatan`, `golongan`, `status_kepegawaian`                  |
+| `employee`     | internal | `nip`, `organization_code`, `organization_name`, `position`, `grade`, `employment_status` |
 | `phone`      | external | `phone_number`, `phone_number_verified`                          |
-| `verifikasi` | external | `tingkat_akun` (`L1`/`L2`)                                                                  |
+| `verification` | external | `verification_level` (`L1`/`L2`)                                                          |
 | `nik`        | external | `nik`. Scope terbatas, harus diizinkan admin SSO untuk klien Anda.                          |
 
 ## Instalasi
@@ -73,7 +73,7 @@ Minta admin SSO (Diskominfo) membuatkan klien, atau buat sendiri di panel admin 
 | Redirect URI                 | `https://app.gorontalokota.go.id/sso/callback`      | `https://app.gorontalokota.go.id/api/auth/callback/gorontalokota-sso` |
 | Back-channel logout URI      | `https://app.gorontalokota.go.id/sso/backchannel-logout` | `https://app.gorontalokota.go.id/api/sso/backchannel-logout`  |
 | Post logout redirect URI     | `https://app.gorontalokota.go.id/`                  | `https://app.gorontalokota.go.id/`                               |
-| Scope                        | `openid profile email asn`                          | sama                                                             |
+| Scope                        | `openid profile email employee`                          | sama                                                             |
 
 Setelah disimpan Anda mendapat `client_id` (mis. `internal-k3j...`) dan `client_secret`. **Client secret hanya ditampilkan sekali**; simpan di secret manager / `.env` server, jangan pernah di kode frontend.
 
@@ -109,7 +109,7 @@ const sso = createSsoClient({
   clientSecret: process.env.SSO_CLIENT_SECRET, // kosongkan untuk klien publik
   redirectUri: process.env.SSO_REDIRECT_URI,
   postLogoutRedirectUri: process.env.SSO_POST_LOGOUT_REDIRECT_URI,
-  scopes: ['openid', 'profile', 'email', 'asn'], // default: openid profile email
+  scopes: ['openid', 'profile', 'email', 'employee'], // default: openid profile email
   // audiences: [...]        // aud yang diterima verifyAccessToken (default [clientId])
   // clockTolerance: 60      // detik
 });
@@ -127,7 +127,7 @@ const sso = createSsoClient({
 | `revoke(token, hint?)`                                      | Revokasi access/refresh token. |
 | `verifyAccessToken(jwt, { requiredScopes? })`               | Verifikasi access token JWT (`typ` `at+jwt`, tanda tangan, `iss`, `aud` ∈ `audiences`, `exp`). Melempar `InsufficientScopeError` bila scope kurang. |
 | `verifyLogoutToken(jwt)`                                    | Verifikasi logout token back-channel sesuai spesifikasi (`typ` `logout+jwt`, `events`, tanpa `nonce`, ada `sub` atau `sid`, `iat` dalam toleransi). |
-| `toSsoUser(claims)`                                         | Memetakan claim ke `SsoUser` (`sub`, `name`, `preferredUsername`, `email`, `nip`, `opdKode`, `opdNama`, `jabatan`, `golongan`, `statusKepegawaian`, `phoneNumber`, `tingkatAkun`, `nik`, `realm`, `raw`). |
+| `toSsoUser(claims)`                                         | Memetakan claim ke `SsoUser` (`sub`, `name`, `preferredUsername`, `email`, `nip`, `organizationCode`, `organizationName`, `position`, `grade`, `employmentStatus`, `phoneNumber`, `verificationLevel`, `nik`, `realm`, `raw`). |
 
 Kelas error (semuanya turunan `SsoError`, punya properti `code`): `StateMismatchError`, `AuthorizationError`, `AuthorizationDeniedError` (`error=access_denied`), `TokenRequestError`, `InvalidTokenError`, `InsufficientScopeError`, `DiscoveryError`, `SsoConfigurationError`.
 
@@ -176,7 +176,7 @@ const ssoClient = createSsoClient({
   clientSecret: process.env.SSO_CLIENT_SECRET,
   redirectUri: process.env.SSO_REDIRECT_URI!, // https://app.../sso/callback
   postLogoutRedirectUri: process.env.SSO_POST_LOGOUT_REDIRECT_URI,
-  scopes: ['openid', 'profile', 'email', 'asn'],
+  scopes: ['openid', 'profile', 'email', 'employee'],
 });
 
 const sso = createSsoRouter({
@@ -188,7 +188,7 @@ const sso = createSsoRouter({
     if (user.realm !== 'internal') {
       throw new Error('Aplikasi ini khusus ASN');
     }
-    // await db.users.upsert({ sub: user.sub, nip: user.nip, nama: user.name, opd: user.opdKode });
+    // await db.users.upsert({ sub: user.sub, nip: user.nip, nama: user.name, opd: user.organizationCode });
   },
 });
 
@@ -259,7 +259,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       realm: 'internal',
       clientId: process.env.SSO_CLIENT_ID!,
       clientSecret: process.env.SSO_CLIENT_SECRET!,
-      scopes: ['openid', 'profile', 'email', 'asn'],
+      scopes: ['openid', 'profile', 'email', 'employee'],
     }),
   ],
   session: { strategy: 'jwt' },
@@ -273,7 +273,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           sid: profile.sid as string | undefined,
           authTime: (profile.auth_time as number | undefined) ?? Math.floor(Date.now() / 1000),
           nip: profile.nip as string | undefined,
-          opdKode: profile.opd_kode as string | undefined,
+          organizationCode: profile.organization_code as string | undefined,
           accessToken: account.access_token,
           refreshToken: account.refresh_token,
           idToken: account.id_token,
@@ -316,7 +316,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       // Jangan memasukkan accessToken/refreshToken/idToken ke session: objek ini terkirim ke browser.
       session.user.id = token.sub!;
-      Object.assign(session.user, { nip: token.nip, opdKode: token.opdKode });
+      Object.assign(session.user, { nip: token.nip, organizationCode: token.organizationCode });
       return session;
     },
   },
@@ -451,7 +451,7 @@ const ssoClient = createSsoClient({
 
 const app = express();
 
-app.get('/api/pegawai/saya', requireToken({ client: ssoClient, scopes: ['asn'] }), (req, res) => {
+app.get('/api/pegawai/saya', requireToken({ client: ssoClient, scopes: ['employee'] }), (req, res) => {
   // req.sso: { sub, client_id, scope, scopes, realm, sid, exp, ... }
   res.json({ sub: req.sso!.sub, scopes: req.sso!.scopes });
 });
@@ -467,7 +467,7 @@ Framework lain (Fastify, Hono, NestJS):
 import { InsufficientScopeError, InvalidTokenError } from '@gorontalokota/sso';
 
 try {
-  const claims = await ssoClient.verifyAccessToken(bearerToken, { requiredScopes: ['asn'] });
+  const claims = await ssoClient.verifyAccessToken(bearerToken, { requiredScopes: ['employee'] });
 } catch (error) {
   if (error instanceof InsufficientScopeError) { /* 403 */ }
   else if (error instanceof InvalidTokenError) { /* 401 */ }

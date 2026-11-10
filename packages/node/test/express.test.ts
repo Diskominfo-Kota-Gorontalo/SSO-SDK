@@ -19,7 +19,7 @@ beforeAll(async () => {
     clientSecret: provider.clientSecret,
     redirectUri: 'http://app.test/sso/callback',
     postLogoutRedirectUri: 'http://app.test/',
-    scopes: ['openid', 'profile', 'email', 'asn'],
+    scopes: ['openid', 'profile', 'email', 'employee'],
     allowInsecureRequests: true,
   });
 });
@@ -34,7 +34,7 @@ beforeEach(() => {
   app.get('/dashboard', sso.requireAuth, (req, res) => {
     res.json({ name: req.ssoUser?.name });
   });
-  app.get('/api/pegawai', requireToken({ client, scopes: ['asn'] }), (req, res) => {
+  app.get('/api/pegawai', requireToken({ client, scopes: ['employee'] }), (req, res) => {
     res.json({ sub: req.sso?.sub });
   });
 });
@@ -152,7 +152,7 @@ describe('requireToken', () => {
   it('accepts a bearer token with the required scope', async () => {
     const response = await request(app)
       .get('/api/pegawai')
-      .set('Authorization', `Bearer ${await provider.accessToken({ scope: 'openid asn' })}`);
+      .set('Authorization', `Bearer ${await provider.accessToken({ scope: 'openid employee' })}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ sub: provider.subject });

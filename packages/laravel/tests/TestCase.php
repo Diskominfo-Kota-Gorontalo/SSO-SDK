@@ -57,6 +57,6 @@ abstract class TestCase extends Orchestra
     {
         Route::middleware('web')->get('/dashboard', fn () => 'dashboard')->middleware('auth');
         Route::middleware('auth:api')->get('/api/profil', fn () => ['sub' => auth('api')->id()]);
-        Route::middleware(['auth:api', 'sso.scope:asn'])->get('/api/kepegawaian', fn () => 'ok');
+        Route::middleware(['auth:api', 'sso.scope:employee'])->get('/api/kepegawaian', fn () => 'ok');
     }
 }

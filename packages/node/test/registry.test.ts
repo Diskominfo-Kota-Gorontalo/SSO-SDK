@@ -34,11 +34,14 @@ describe('MemoryLogoutRegistry', () => {
 describe('toSsoUser', () => {
   it('maps internal and external realm claims', () => {
     expect(
-      toSsoUser({ iss: 'https://sso.gorontalokota.go.id/internal', sub: '1', name: 'A', preferred_username: '1980', nip: '1980', opd_kode: '1.01', status_kepegawaian: 'PNS' }),
-    ).toMatchObject({ sub: '1', realm: 'internal', preferredUsername: '1980', nip: '1980', opdKode: '1.01', statusKepegawaian: 'PNS' });
+      toSsoUser({ iss: 'https://sso.gorontalokota.go.id/internal', sub: '1', name: 'A', preferred_username: '1980', nip: '1980', organization_code: '1.01', employment_status: 'PNS' }),
+    ).toMatchObject({ sub: '1', realm: 'internal', preferredUsername: '1980', nip: '1980', organizationCode: '1.01', employmentStatus: 'PNS' });
 
-    const citizen = toSsoUser({ iss: 'https://sso.gorontalokota.go.id/external', sub: '2', phone_number: '0812', tingkat_akun: 'L2' });
-    expect(citizen).toMatchObject({ realm: 'external', phoneNumber: '0812', tingkatAkun: 'L2' });
+    // Server SSO lama hanya mengirim nama klaim bahasa Indonesia.
+    expect(toSsoUser({ sub: '1', opd_kode: '1.02', jabatan: 'Analis', tingkat_akun: 'L2' })).toMatchObject({ organizationCode: '1.02', position: 'Analis', verificationLevel: 'L2' });
+
+    const citizen = toSsoUser({ iss: 'https://sso.gorontalokota.go.id/external', sub: '2', phone_number: '0812', verification_level: 'L2' });
+    expect(citizen).toMatchObject({ realm: 'external', phoneNumber: '0812', verificationLevel: 'L2' });
     expect(citizen).not.toHaveProperty('nip');
   });
 });

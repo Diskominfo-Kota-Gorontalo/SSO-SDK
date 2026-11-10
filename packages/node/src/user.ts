@@ -10,15 +10,16 @@ export interface SsoUser {
   emailVerified?: boolean;
   /** Internal realm (ASN). */
   nip?: string;
-  opdKode?: string;
-  opdNama?: string;
-  jabatan?: string;
-  golongan?: string;
-  statusKepegawaian?: string;
+  organizationCode?: string;
+  organizationName?: string;
+  position?: string;
+  grade?: string;
+  employmentStatus?: string;
   /** External realm (citizens). */
   phoneNumber?: string;
   phoneNumberVerified?: boolean;
-  tingkatAkun?: string;
+  /** "L1" (self-registered) or "L2" (NIK checked at a service counter). */
+  verificationLevel?: string;
   nik?: string;
   realm?: Realm;
   /** Original claims. */
@@ -26,6 +27,8 @@ export interface SsoUser {
 }
 
 const str = (value: unknown): string | undefined => (typeof value === 'string' && value !== '' ? value : undefined);
+/** English claim first, then the legacy Indonesian name sent by older SSO servers. */
+const first = (claims: Record<string, unknown>, ...names: string[]): string | undefined => names.map((name) => str(claims[name])).find((value) => value !== undefined);
 const bool = (value: unknown): boolean | undefined => (typeof value === 'boolean' ? value : undefined);
 
 /**
@@ -48,14 +51,14 @@ export function toSsoUser(claims: Record<string, unknown>): SsoUser {
     email: str(claims.email),
     emailVerified: bool(claims.email_verified),
     nip: str(claims.nip),
-    opdKode: str(claims.opd_kode),
-    opdNama: str(claims.opd_nama),
-    jabatan: str(claims.jabatan),
-    golongan: str(claims.golongan),
-    statusKepegawaian: str(claims.status_kepegawaian),
+    organizationCode: first(claims, 'organization_code', 'opd_kode'),
+    organizationName: first(claims, 'organization_name', 'opd_nama'),
+    position: first(claims, 'position', 'jabatan'),
+    grade: first(claims, 'grade', 'golongan'),
+    employmentStatus: first(claims, 'employment_status', 'status_kepegawaian'),
     phoneNumber: str(claims.phone_number),
     phoneNumberVerified: bool(claims.phone_number_verified),
-    tingkatAkun: str(claims.tingkat_akun),
+    verificationLevel: first(claims, 'verification_level', 'tingkat_akun'),
     nik: str(claims.nik),
     realm,
     raw: { ...claims },

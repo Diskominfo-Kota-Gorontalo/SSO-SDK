@@ -21,16 +21,28 @@ export interface IdTokenClaims extends JwtClaims {
   preferred_username?: string;
   email?: string;
   email_verified?: boolean;
-  /** Internal realm (scope `asn`). */
+  /** Internal realm (scope `employee`). */
   nip?: string;
+  organization_code?: string;
+  organization_name?: string;
+  position?: string;
+  grade?: string;
+  employment_status?: string;
+  /** @deprecated Legacy name of `organization_code`, sent only during the transition. */
   opd_kode?: string;
+  /** @deprecated Legacy name of `organization_name`. */
   opd_nama?: string;
+  /** @deprecated Legacy name of `position`. */
   jabatan?: string;
+  /** @deprecated Legacy name of `grade`. */
   golongan?: string;
+  /** @deprecated Legacy name of `employment_status`. */
   status_kepegawaian?: string;
   /** External realm. */
   phone_number?: string;
   phone_number_verified?: boolean;
+  verification_level?: 'L1' | 'L2' | string;
+  /** @deprecated Legacy name of `verification_level`. */
   tingkat_akun?: 'L1' | 'L2' | string;
   nik?: string;
 }

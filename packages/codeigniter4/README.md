@@ -16,7 +16,7 @@ Route dan filter terdaftar otomatis lewat auto-discovery modul (pastikan `Config
 sso.realm = internal            # internal (ASN) atau external (masyarakat)
 sso.clientId = internal-xxxx
 sso.clientSecret = xxxx
-sso.scopes = "openid profile email asn"
+sso.scopes = "openid profile email employee"
 ```
 
 Kecualikan back-channel logout dari CSRF di `app/Config/Filters.php`:
@@ -86,7 +86,7 @@ Events::on('sso_login', static function (Gorontalokota\Sso\SsoUser $ssoUser) {
 
 ```php
 $routes->group('api', ['filter' => 'ssotoken'], ...);              // token valid
-$routes->get('api/pegawai', 'Api::pegawai', ['filter' => 'ssotoken:asn']);   // + scope wajib
+$routes->get('api/pegawai', 'Api::pegawai', ['filter' => 'ssotoken:employee']);   // + scope wajib
 ```
 
 Klaim token di controller: `\Gorontalokota\Sso\CodeIgniter\Filters\SsoTokenFilter::claims()`.

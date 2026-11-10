@@ -135,7 +135,7 @@ describe('other endpoints', () => {
     const refreshed = await client.refresh(tokens.refreshToken!);
     expect(refreshed.accessToken).not.toBe(tokens.accessToken);
 
-    expect(await client.userinfo(refreshed.accessToken, provider.subject)).toMatchObject({ sub: provider.subject, opd_kode: '1.01' });
+    expect(await client.userinfo(refreshed.accessToken, provider.subject)).toMatchObject({ sub: provider.subject, organization_code: '1.01' });
 
     await client.revoke(refreshed.refreshToken!, 'refresh_token');
     expect(provider.revoked).toContain(refreshed.refreshToken);

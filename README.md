@@ -34,11 +34,15 @@ Semua paket membutuhkan **PHP 8.1+** atau **Node.js 20+**.
 | internal | `openid` (wajib) | `sub` |
 | internal | `profile` | `name`, `preferred_username` (= NIP) |
 | internal | `email` | `email` (email dinas) |
-| internal | `asn` | `nip`, `opd_kode`, `opd_nama`, `jabatan`, `golongan`, `status_kepegawaian` |
+| internal | `employee` | `nip`, `organization_code`, `organization_name`, `position`, `grade`, `employment_status` |
 | external | `profile` | `name` |
 | external | `email`, `phone` | `email`, `phone_number` |
-| external | `verifikasi` | `tingkat_akun` (`L1` daftar mandiri, `L2` NIK sudah dicek di loket) |
+| external | `verification` | `verification_level` (`L1` daftar mandiri, `L2` NIK sudah dicek di loket) |
 | external | `nik` | `nik` (data sensitif, perlu izin khusus Diskominfo) |
+
+### Nama lama (sebelum v0.2)
+
+Scope `asn` dan `verifikasi` masih diterima server SSO dan otomatis diubah menjadi `employee` dan `verification`. Selama masa transisi, server juga mengirim klaim lama (`opd_kode`, `opd_nama`, `jabatan`, `golongan`, `status_kepegawaian`, `tingkat_akun`) di samping klaim baru, sehingga aplikasi dengan SDK v0.1 tetap berjalan. SDK v0.2 membaca nama baru dan memakai nama lama sebagai cadangan. Perbarui ke v0.2 sebelum klaim lama dimatikan.
 
 ## Praktik yang diterapkan SDK ini
 

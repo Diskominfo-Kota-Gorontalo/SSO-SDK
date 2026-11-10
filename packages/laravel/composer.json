@@ -18,7 +18,7 @@
     },
     "require": {
         "php": "^8.2",
-        "gorontalokota/sso-php": "^0.1",
+        "gorontalokota/sso-php": "^0.2",
         "illuminate/auth": "^12.0 || ^13.0",
         "illuminate/cache": "^12.0 || ^13.0",
         "illuminate/http": "^12.0 || ^13.0",
@@ -56,7 +56,7 @@
             "options": {
                 "symlink": true,
                 "versions": {
-                    "gorontalokota/sso-php": "0.1.1"
+                    "gorontalokota/sso-php": "0.2.0"
                 }
             }
         }

@@ -22,8 +22,8 @@ final class ApiGuardTest extends TestCase
     {
         $this->withToken($this->provider->accessToken())->getJson('/api/kepegawaian')
             ->assertForbidden()
-            ->assertJsonPath('missing_scopes', ['asn']);
+            ->assertJsonPath('missing_scopes', ['employee']);
 
-        $this->withToken($this->provider->accessToken(['scope' => 'openid asn']))->getJson('/api/kepegawaian')->assertOk();
+        $this->withToken($this->provider->accessToken(['scope' => 'openid employee']))->getJson('/api/kepegawaian')->assertOk();
     }
 }

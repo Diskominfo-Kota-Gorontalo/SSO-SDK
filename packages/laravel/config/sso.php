@@ -24,7 +24,7 @@ return [
     'client_secret' => env('SSO_CLIENT_SECRET'),
 
     /*
-     * Scope yang diminta. Internal: openid profile email asn. External: openid profile email phone verifikasi (nik perlu izin khusus).
+     * Scope yang diminta. Internal: openid profile email employee. External: openid profile email phone verification (nik perlu izin khusus).
      */
     'scopes' => env('SSO_SCOPES', 'openid profile email'),
 

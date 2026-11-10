@@ -16,7 +16,7 @@ php artisan migrate       # menambah kolom users.sso_sub
 SSO_REALM=internal            # internal (ASN) atau external (masyarakat)
 SSO_CLIENT_ID=internal-xxxx
 SSO_CLIENT_SECRET=xxxx
-SSO_SCOPES="openid profile email asn"
+SSO_SCOPES="openid profile email employee"
 ```
 
 Daftarkan di portal pengembang SSO (perintah `sso:install` menampilkan nilainya):
@@ -56,7 +56,7 @@ Setelah login, pengguna lokal tersedia lewat `auth()->user()` seperti biasa. Dat
 use Gorontalokota\Sso\Laravel\Facades\Sso;
 
 Sso::user()->nip();          // NIP (realm internal)
-Sso::user()->employment();   // OPD, jabatan, golongan (scope asn)
+Sso::user()->employment();   // organization_code, organization_name, position, grade, employment_status (scope employee)
 Sso::accessToken();          // untuk memanggil API lain yang dilindungi SSO, diperbarui otomatis
 ```
 
@@ -98,7 +98,7 @@ Aktif otomatis. Middleware ditambahkan ke grup `web` sehingga pengguna yang sesi
 
 ```php
 Route::middleware('auth:api')->get('/profil', fn () => auth('api')->user());
-Route::middleware(['auth:api', 'sso.scope:asn'])->get('/kepegawaian', ...);
+Route::middleware(['auth:api', 'sso.scope:employee'])->get('/kepegawaian', ...);
 ```
 
 - `SSO_API_AUDIENCES`: client_id yang tokennya diterima API ini (dipisah koma). Bawaan: client_id aplikasi ini.

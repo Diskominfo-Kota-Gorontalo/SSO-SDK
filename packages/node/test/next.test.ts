@@ -20,14 +20,14 @@ describe('GorontalokotaSso (Auth.js provider)', () => {
       realm: 'external',
       clientId: 'external-abc',
       clientSecret: 'secret',
-      scopes: ['openid', 'profile', 'verifikasi'],
+      scopes: ['openid', 'profile', 'verification'],
     });
 
     expect(config).toMatchObject({
       type: 'oidc',
       issuer: 'https://sso.gorontalokota.go.id/external',
       checks: ['pkce', 'state', 'nonce'],
-      authorization: { params: { scope: 'openid profile verifikasi' } },
+      authorization: { params: { scope: 'openid profile verification' } },
       client: { token_endpoint_auth_method: 'client_secret_post' },
     });
     expect(GorontalokotaSso({ realm: 'internal', clientId: 'public' }).client).toEqual({ token_endpoint_auth_method: 'none' });
@@ -38,10 +38,10 @@ describe('GorontalokotaSso (Auth.js provider)', () => {
       iss: 'https://sso.gorontalokota.go.id/external',
       sub: 'warga-1',
       name: 'Siti',
-      tingkat_akun: 'L2',
+      verification_level: 'L2',
     });
 
-    expect(user).toMatchObject({ id: 'warga-1', sub: 'warga-1', name: 'Siti', email: null, tingkatAkun: 'L2', realm: 'external' });
+    expect(user).toMatchObject({ id: 'warga-1', sub: 'warga-1', name: 'Siti', email: null, verificationLevel: 'L2', realm: 'external' });
   });
 });
 
