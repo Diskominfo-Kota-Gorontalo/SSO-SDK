@@ -38,12 +38,17 @@ export interface IdTokenClaims extends JwtClaims {
   golongan?: string;
   /** @deprecated Legacy name of `employment_status`. */
   status_kepegawaian?: string;
-  /** External realm. */
+  /** Scope `phone` (both realms), E.164 format. */
   phone_number?: string;
   phone_number_verified?: boolean;
+  /** Internal realm, scope `photo`: file name as in the employee database. */
+  photo?: string;
+  /** Scope `photo`: photo URL, only when the SSO server knows the photo base URL. */
+  picture?: string;
   verification_level?: 'L1' | 'L2' | string;
   /** @deprecated Legacy name of `verification_level`. */
   tingkat_akun?: 'L1' | 'L2' | string;
+  /** Scope `nik` (both realms, restricted). */
   nik?: string;
 }
 

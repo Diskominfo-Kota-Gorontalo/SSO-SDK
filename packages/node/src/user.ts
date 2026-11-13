@@ -15,11 +15,16 @@ export interface SsoUser {
   position?: string;
   grade?: string;
   employmentStatus?: string;
-  /** External realm (citizens). */
+  /** Internal realm, scope `photo`: file name as in the employee database. */
+  photo?: string;
+  /** Scope `photo`: photo URL (OIDC `picture`), only when the SSO server knows the photo base URL. */
+  picture?: string;
+  /** Scope `phone` (both realms), E.164 format. */
   phoneNumber?: string;
   phoneNumberVerified?: boolean;
   /** "L1" (self-registered) or "L2" (NIK checked at a service counter). */
   verificationLevel?: string;
+  /** Scope `nik` (both realms, restricted). */
   nik?: string;
   realm?: Realm;
   /** Original claims. */
@@ -56,6 +61,8 @@ export function toSsoUser(claims: Record<string, unknown>): SsoUser {
     position: first(claims, 'position', 'jabatan'),
     grade: first(claims, 'grade', 'golongan'),
     employmentStatus: first(claims, 'employment_status', 'status_kepegawaian'),
+    photo: str(claims.photo),
+    picture: str(claims.picture),
     phoneNumber: str(claims.phone_number),
     phoneNumberVerified: bool(claims.phone_number_verified),
     verificationLevel: first(claims, 'verification_level', 'tingkat_akun'),

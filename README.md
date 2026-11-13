@@ -34,9 +34,12 @@ Semua paket membutuhkan **PHP 8.1+** atau **Node.js 20+**.
 | internal | `openid` (wajib) | `sub` |
 | internal | `profile` | `name`, `preferred_username` (= NIP) |
 | internal | `email` | `email` (email dinas) |
+| internal | `phone` | `phone_number` (format E.164, mis. `+6281234567890`), `phone_number_verified` |
+| internal | `nik` | `nik` (data sensitif, perlu izin khusus Diskominfo) |
+| internal | `photo` | `photo` (nama berkas foto dari data kepegawaian), `picture` (URL foto, bila server SSO mengaturnya) |
 | internal | `employee` | `nip`, `organization_code`, `organization_name`, `position`, `grade`, `employment_status` |
 | external | `profile` | `name` |
-| external | `email`, `phone` | `email`, `phone_number` |
+| external | `email`, `phone` | `email`, `phone_number`, `phone_number_verified` |
 | external | `verification` | `verification_level` (`L1` daftar mandiri, `L2` NIK sudah dicek di loket) |
 | external | `nik` | `nik` (data sensitif, perlu izin khusus Diskominfo) |
 

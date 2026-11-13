@@ -44,9 +44,10 @@ Scope yang tersedia:
 | `profile`    | keduanya | `name`, `preferred_username` (realm internal: NIP)                                          |
 | `email`      | keduanya | `email`, `email_verified`                                                                   |
 | `employee`     | internal | `nip`, `organization_code`, `organization_name`, `position`, `grade`, `employment_status` |
-| `phone`      | external | `phone_number`, `phone_number_verified`                          |
+| `phone`      | keduanya | `phone_number` (E.164), `phone_number_verified`                  |
+| `photo`      | internal | `photo` (nama berkas foto), `picture` (URL foto, bila diatur server SSO) |
 | `verification` | external | `verification_level` (`L1`/`L2`)                                                          |
-| `nik`        | external | `nik`. Scope terbatas, harus diizinkan admin SSO untuk klien Anda.                          |
+| `nik`        | keduanya | `nik`. Scope terbatas, harus diizinkan admin SSO untuk klien Anda.                          |
 
 ## Instalasi
 
@@ -127,7 +128,7 @@ const sso = createSsoClient({
 | `revoke(token, hint?)`                                      | Revokasi access/refresh token. |
 | `verifyAccessToken(jwt, { requiredScopes? })`               | Verifikasi access token JWT (`typ` `at+jwt`, tanda tangan, `iss`, `aud` ∈ `audiences`, `exp`). Melempar `InsufficientScopeError` bila scope kurang. |
 | `verifyLogoutToken(jwt)`                                    | Verifikasi logout token back-channel sesuai spesifikasi (`typ` `logout+jwt`, `events`, tanpa `nonce`, ada `sub` atau `sid`, `iat` dalam toleransi). |
-| `toSsoUser(claims)`                                         | Memetakan claim ke `SsoUser` (`sub`, `name`, `preferredUsername`, `email`, `nip`, `organizationCode`, `organizationName`, `position`, `grade`, `employmentStatus`, `phoneNumber`, `verificationLevel`, `nik`, `realm`, `raw`). |
+| `toSsoUser(claims)`                                         | Memetakan claim ke `SsoUser` (`sub`, `name`, `preferredUsername`, `email`, `nip`, `organizationCode`, `organizationName`, `position`, `grade`, `employmentStatus`, `photo`, `picture`, `phoneNumber`, `phoneNumberVerified`, `verificationLevel`, `nik`, `realm`, `raw`). |
 
 Kelas error (semuanya turunan `SsoError`, punya properti `code`): `StateMismatchError`, `AuthorizationError`, `AuthorizationDeniedError` (`error=access_denied`), `TokenRequestError`, `InvalidTokenError`, `InsufficientScopeError`, `DiscoveryError`, `SsoConfigurationError`.
 

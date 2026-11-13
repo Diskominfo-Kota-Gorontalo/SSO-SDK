@@ -57,6 +57,9 @@ use Gorontalokota\Sso\Laravel\Facades\Sso;
 
 Sso::user()->nip();          // NIP (realm internal)
 Sso::user()->employment();   // organization_code, organization_name, position, grade, employment_status (scope employee)
+Sso::user()->phoneNumber();  // +6281234567890 (scope phone), phoneNumberVerified()
+Sso::user()->nik();          // scope nik (terbatas, perlu izin admin SSO)
+Sso::user()->photo();        // nama berkas foto (scope photo), picture() = URL foto bila diatur server SSO
 Sso::accessToken();          // untuk memanggil API lain yang dilindungi SSO, diperbarui otomatis
 ```
 

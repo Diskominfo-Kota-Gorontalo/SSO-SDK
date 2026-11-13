@@ -69,15 +69,34 @@ final class SsoUser
         return $nip !== null ? (string) $nip : null;
     }
 
-    /** NIK (external realm, restricted scope "nik"). */
+    /** NIK (both realms, restricted scope "nik"). */
     public function nik(): ?string
     {
         return isset($this->claims['nik']) ? (string) $this->claims['nik'] : null;
     }
 
+    /** Phone number in E.164 format, e.g. "+6281234567890" (scope "phone", both realms). */
     public function phoneNumber(): ?string
     {
         return isset($this->claims['phone_number']) ? (string) $this->claims['phone_number'] : null;
+    }
+
+    /** Whether the person proved ownership of the phone number (WhatsApp code); null when not sent. */
+    public function phoneNumberVerified(): ?bool
+    {
+        return isset($this->claims['phone_number_verified']) ? (bool) $this->claims['phone_number_verified'] : null;
+    }
+
+    /** Internal realm photo file name exactly as in the employee database (scope "photo"). */
+    public function photo(): ?string
+    {
+        return $this->firstClaim('photo');
+    }
+
+    /** Photo URL (standard OIDC "picture"); only sent when the SSO server knows the photo base URL. */
+    public function picture(): ?string
+    {
+        return $this->firstClaim('picture');
     }
 
     /**

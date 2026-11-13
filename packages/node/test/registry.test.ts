@@ -38,6 +38,9 @@ describe('toSsoUser', () => {
     ).toMatchObject({ sub: '1', realm: 'internal', preferredUsername: '1980', nip: '1980', organizationCode: '1.01', employmentStatus: 'PNS' });
 
     // Server SSO lama hanya mengirim nama klaim bahasa Indonesia.
+    expect(
+      toSsoUser({ sub: '1', phone_number: '+6281234567890', phone_number_verified: true, nik: '7571000000000001', photo: '1990.png' }),
+    ).toMatchObject({ phoneNumber: '+6281234567890', phoneNumberVerified: true, nik: '7571000000000001', photo: '1990.png' });
     expect(toSsoUser({ sub: '1', opd_kode: '1.02', jabatan: 'Analis', tingkat_akun: 'L2' })).toMatchObject({ organizationCode: '1.02', position: 'Analis', verificationLevel: 'L2' });
 
     const citizen = toSsoUser({ iss: 'https://sso.gorontalokota.go.id/external', sub: '2', phone_number: '0812', verification_level: 'L2' });
